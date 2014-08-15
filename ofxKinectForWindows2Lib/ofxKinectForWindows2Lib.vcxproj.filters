@@ -45,6 +45,9 @@
     <ClInclude Include="..\src\ofxKinectForWindows2\Source\BodyFrame.h">
       <Filter>src\ofxKinectForWindows2\Source</Filter>
     </ClInclude>
+    <ClInclude Include="..\src\ofxKinectForWindows2\Source\FaceFrame.h">
+      <Filter>src\ofxKinectForWindows2\Source</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\src\ofxKinectForWindows2\Device.cpp">
@@ -72,6 +75,9 @@
       <Filter>src\ofxKinectForWindows2\Source</Filter>
     </ClCompile>
     <ClCompile Include="..\src\ofxKinectForWindows2\Source\BodyFrame.cpp">
+      <Filter>src\ofxKinectForWindows2\Source</Filter>
+    </ClCompile>
+    <ClCompile Include="..\src\ofxKinectForWindows2\Source\FaceFrame.cpp">
       <Filter>src\ofxKinectForWindows2\Source</Filter>
     </ClCompile>
   </ItemGroup>

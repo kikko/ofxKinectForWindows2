@@ -110,7 +110,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <Lib>
-      <AdditionalDependencies>kinect20.lib</AdditionalDependencies>
+      <AdditionalDependencies>kinect20.lib;</AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
       <Command />
@@ -147,7 +147,7 @@
       <OptimizeReferences>true</OptimizeReferences>
     </Link>
     <Lib>
-      <AdditionalDependencies>kinect20.lib</AdditionalDependencies>
+      <AdditionalDependencies>kinect20.lib;</AdditionalDependencies>
     </Lib>
     <PostBuildEvent>
       <Command />
@@ -162,6 +162,7 @@
     <ClInclude Include="..\src\ofxKinectForWindows2\Source\BodyIndex.h" />
     <ClInclude Include="..\src\ofxKinectForWindows2\Source\Color.h" />
     <ClInclude Include="..\src\ofxKinectForWindows2\Source\Depth.h" />
+    <ClInclude Include="..\src\ofxKinectForWindows2\Source\FaceFrame.h" />
     <ClInclude Include="..\src\ofxKinectForWindows2\Source\Infrared.h" />
     <ClInclude Include="..\src\ofxKinectForWindows2\Source\LongExposureInfrared.h" />
     <ClInclude Include="..\src\ofxKinectForWindows2\Utils.h" />
@@ -173,6 +174,7 @@
     <ClCompile Include="..\src\ofxKinectForWindows2\Source\Color.cpp" />
     <ClCompile Include="..\src\ofxKinectForWindows2\Source\Depth.cpp" />
     <ClCompile Include="..\src\ofxKinectForWindows2\Source\BaseImage.cpp" />
+    <ClCompile Include="..\src\ofxKinectForWindows2\Source\FaceFrame.cpp" />
     <ClCompile Include="..\src\ofxKinectForWindows2\Source\Infrared.cpp" />
     <ClCompile Include="..\src\ofxKinectForWindows2\Source\LongExposureInfraRed.cpp" />
     <ClCompile Include="..\src\ofxKinectForWindows2\Utils.cpp" />

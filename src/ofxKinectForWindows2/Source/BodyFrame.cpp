@@ -4,6 +4,37 @@
 #define CHECK_OPEN if(!this->reader) { OFXKINECTFORWINDOWS2_ERROR << "Failed : Reader is not open"; }
 
 namespace ofxKinectForWindows2 {
+
+	Body::Body():
+	bTrackHands(false),
+	bTrackFaceProperties(false){
+		clear();
+	}
+
+	void Body::clear() {
+		joints.clear();
+		leftHandState = HandState_Unknown;
+		rightHandState = HandState_Unknown;
+		tracked = false;
+	}
+
+	void Body::setTrackHands(bool val) {
+		bTrackHands = val;
+	}
+
+	bool Body::isTrackingHands() {
+		return bTrackHands;
+	}
+
+	void Body::setTrackFaceProperties(bool val) {
+		bTrackFaceProperties = val;
+	}
+
+	bool Body::isTrackingFaceProperties() {
+		return bTrackFaceProperties;
+	}
+
+
 	namespace Source {
 		//----------
 		string BodyFrame::getTypeName() const {
@@ -11,7 +42,7 @@ namespace ofxKinectForWindows2 {
 		}
 
 		//----------
-		const vector<Body> & BodyFrame::getBodies() const {
+		vector<Body> & BodyFrame::getBodies() {
 			return bodies;
 		}
 
@@ -31,6 +62,7 @@ namespace ofxKinectForWindows2 {
 
 		//----------
 		void BodyFrame::init(IKinectSensor * sensor) {
+			this->sensor = sensor;
 			this->reader = NULL;
 			try {
 				IBodyFrameSource * source = NULL;
@@ -97,12 +129,12 @@ namespace ofxKinectForWindows2 {
 #undef BONEDEF_ADD
 		}
 
+
 		//----------
 		void BodyFrame::update() {
 			CHECK_OPEN
 			
 			IBodyFrame * frame = NULL;
-			IFrameDescription * frameDescription = NULL;
 			try {
 				//acquire frame
 				if (FAILED(this->reader->AcquireLatestFrame(&frame))) {
@@ -114,7 +146,7 @@ namespace ofxKinectForWindows2 {
 				}
 				
 				if (FAILED(frame->get_FloorClipPlane(&floorClipPlane))){
-					throw(Exception("Failed to get floor clip plane"));
+					throw Exception("Failed to get floor clip plane");
 				}
 
 				if (FAILED(frame->GetAndRefreshBodyData(_countof(ppBodies), ppBodies))){
@@ -139,7 +171,7 @@ namespace ofxKinectForWindows2 {
 						{
 							// retrieve tracking id
 
-							UINT64 trackingId = -1;
+							UINT64 trackingId = 0;
 
 							if (FAILED(pBody->get_TrackingId(&trackingId))) {
 								throw Exception("Failed to get tracking id");
@@ -163,24 +195,49 @@ namespace ofxKinectForWindows2 {
 								body.joints[joints[j].JointType] = Joint(joints[j], jointsOrient[j]);
 							}
 
-							// retrieve hand states
+							// get hand states
 
-							HandState leftHandState = HandState_Unknown;
-							HandState rightHandState = HandState_Unknown;
-
-							if (FAILED(pBody->get_HandLeftState(&leftHandState))){
-								throw Exception("Failed to get left hand state");
+							if (body.isTrackingHands()){
+								if (FAILED(pBody->get_HandLeftState(&body.leftHandState))){
+									throw Exception("Failed to get left hand state");
+								}
+								if (FAILED(pBody->get_HandRightState(&body.rightHandState))){
+									throw Exception("Failed to get right hand state");
+								}
 							}
-							if (FAILED(pBody->get_HandRightState(&rightHandState))){
-								throw Exception("Failed to get right hand state");
-							}
 
-							body.leftHandState = leftHandState;
-							body.rightHandState = rightHandState;
+							// not available yet :
+							/*DetectionResult results[Activity_Count];
+							if (FAILED(pBody->GetActivityDetectionResults(Activity_Count, results))){
+								throw Exception("error retrieving activity");
+							};*/
+
+
+							// update or setup face tracking if we don't have one yet
+
+							if (faceFrame == NULL) {
+								if (body.isTrackingFaceProperties()) {
+									faceFrame = shared_ptr<FaceFrame>(new FaceFrame());
+									faceFrame->init(sensor, body.trackingId);
+									//faceFrame->update();
+								}
+							}
+							else {
+								if (faceFrame->getBodyId() == body.trackingId) {
+									if (body.isTrackingFaceProperties()) {
+										faceFrame->update();
+										body.faceProperties = faceFrame->getProperties();
+									}
+									else {
+										faceFrame = NULL;
+									}
+								}
+							}
 						}
 					}
 				}
 
+				// potential memory leak here if error thrown above
 				for (int i = 0; i < _countof(ppBodies); ++i)
 				{
 					SafeRelease(ppBodies[i]);
@@ -189,7 +246,6 @@ namespace ofxKinectForWindows2 {
 			catch (std::exception & e) {
 				OFXKINECTFORWINDOWS2_ERROR << e.what();
 			}
-			SafeRelease(frameDescription);
 			SafeRelease(frame);
 		}
 
@@ -217,17 +273,23 @@ namespace ofxKinectForWindows2 {
 					p.x = x + p.x / w * width;
 					p.y = y + p.y / h * height;
 
-					int radius = (state == TrackingState_Inferred) ? 2 : 8;
-					ofSetColor(0, 255, 0);
-					ofCircle(p.x, p.y, radius);
+					//int radius = (state == TrackingState_Inferred) ? 2 : 8;
+					//ofSetColor(0, 255, 0);
+					//ofCircle(p.x, p.y, radius);
+
+					//if (j.first == JointType_Head) {
+					//	ofDrawBitmapString(ofToString(body.trackingId), p.x + radius, p.y);
+					//}
 				}
 				
 				for (auto & bone : bonesDef) {
 					drawProjectedBone(body.joints, jntsProj, bone.first, bone.second);
 				}
 
-				drawProjectedHand(body.leftHandState, jntsProj[JointType_HandLeft]);
-				drawProjectedHand(body.rightHandState, jntsProj[JointType_HandRight]);
+				if (body.isTrackingHands()){
+					drawProjectedHand(body.leftHandState, jntsProj[JointType_HandLeft]);
+					drawProjectedHand(body.rightHandState, jntsProj[JointType_HandRight]);
+				}
 			}
 
 			ofPopStyle();
