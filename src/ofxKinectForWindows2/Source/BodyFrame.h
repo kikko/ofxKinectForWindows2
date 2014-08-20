@@ -81,10 +81,10 @@ namespace ofxKinectForWindows2 {
 		void clear();
 
 		void setTrackHands(bool val);
-		bool isTrackingHands();
+		bool isTrackingHands() const;
 
 		void setTrackFaceProperties(bool val);
-		bool isTrackingFaceProperties();
+		bool isTrackingFaceProperties() const;
 
 		UINT64 trackingId;
 
@@ -117,6 +117,8 @@ namespace ofxKinectForWindows2 {
 			IBodyFrameReader * getReader();
 			vector<Body> & getBodies();
 			const vector< pair<JointType, JointType> > & getBonesDef() const;
+
+			Body * getBodyPtrById(UINT64 trackingId);
 
 			const Vector4 getFloorClipPlane() {
 				return floorClipPlane;

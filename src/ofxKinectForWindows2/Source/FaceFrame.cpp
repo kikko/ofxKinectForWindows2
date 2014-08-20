@@ -24,12 +24,12 @@ namespace ofxKinectForWindows2 {
 			try {
 
 				const DWORD features = 
-					FaceFrameFeatures_BoundingBoxInInfraredSpace
+					/*FaceFrameFeatures_BoundingBoxInInfraredSpace
 					| FaceFrameFeatures_PointsInInfraredSpace
 					| FaceFrameFeatures_BoundingBoxInColorSpace
 					| FaceFrameFeatures_PointsInColorSpace
 					| FaceFrameFeatures_RotationOrientation
-					| FaceFrameFeatures_Happy
+					| */FaceFrameFeatures_Happy
 					| FaceFrameFeatures_RightEyeClosed
 					| FaceFrameFeatures_LeftEyeClosed
 					| FaceFrameFeatures_MouthOpen

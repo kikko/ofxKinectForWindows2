@@ -22,7 +22,7 @@ namespace ofxKinectForWindows2 {
 		bTrackHands = val;
 	}
 
-	bool Body::isTrackingHands() {
+	bool Body::isTrackingHands() const {
 		return bTrackHands;
 	}
 
@@ -30,7 +30,7 @@ namespace ofxKinectForWindows2 {
 		bTrackFaceProperties = val;
 	}
 
-	bool Body::isTrackingFaceProperties() {
+	bool Body::isTrackingFaceProperties() const {
 		return bTrackFaceProperties;
 	}
 
@@ -45,6 +45,16 @@ namespace ofxKinectForWindows2 {
 		vector<Body> & BodyFrame::getBodies() {
 			return bodies;
 		}
+
+		Body * BodyFrame::getBodyPtrById(UINT64 trackingId){
+			for (auto &b : bodies){
+				if (b.trackingId == trackingId) {
+					return &b;
+				}
+			}
+			return NULL;
+		}
+
 
 		//----------
 		const vector< pair<JointType, JointType> > & BodyFrame::getBonesDef() const {
@@ -232,6 +242,11 @@ namespace ofxKinectForWindows2 {
 										faceFrame = NULL;
 									}
 								}
+							}
+						}
+						else {
+							if (faceFrame && faceFrame->getBodyId() == body.trackingId) {
+								faceFrame = NULL;
 							}
 						}
 					}
