@@ -36,6 +36,12 @@ namespace ofxKinectForWindows2 {
 
 
 	namespace Source {
+
+
+		BodyFrame::~BodyFrame(){
+			SafeRelease(reader);
+		}
+
 		//----------
 		string BodyFrame::getTypeName() const {
 			return "BodyFrame";
@@ -251,17 +257,17 @@ namespace ofxKinectForWindows2 {
 						}
 					}
 				}
-
-				// potential memory leak here if error thrown above
-				for (int i = 0; i < _countof(ppBodies); ++i)
-				{
-					SafeRelease(ppBodies[i]);
-				}
 			}
 			catch (std::exception & e) {
 				OFXKINECTFORWINDOWS2_ERROR << e.what();
 			}
+
+			for (int i = 0; i < _countof(ppBodies); ++i)
+			{
+				SafeRelease(ppBodies[i]);
+			}
 			SafeRelease(frame);
+			
 		}
 
 		void BodyFrame::drawProjected(int x, int y, int width, int height, ProjectionCoordinates proj) {

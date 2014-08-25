@@ -108,6 +108,8 @@ namespace ofxKinectForWindows2 {
 		// -------
 		class BodyFrame : public Base {
 		public:
+			BodyFrame::~BodyFrame();
+
 			string getTypeName() const override;
 			void init(IKinectSensor *) override;
 			void update();
