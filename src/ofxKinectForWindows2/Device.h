@@ -7,6 +7,7 @@
 #include "Source/LongExposureInfrared.h"
 #include "Source/BodyIndex.h"
 #include "Source/BodyFrame.h"
+#include "Source/VGB.h"
 
 #include <memory>
 #include <vector>

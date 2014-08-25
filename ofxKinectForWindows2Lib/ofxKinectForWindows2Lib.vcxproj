@@ -165,6 +165,7 @@
     <ClInclude Include="..\src\ofxKinectForWindows2\Source\FaceFrame.h" />
     <ClInclude Include="..\src\ofxKinectForWindows2\Source\Infrared.h" />
     <ClInclude Include="..\src\ofxKinectForWindows2\Source\LongExposureInfrared.h" />
+    <ClInclude Include="..\src\ofxKinectForWindows2\Source\VGB.h" />
     <ClInclude Include="..\src\ofxKinectForWindows2\Utils.h" />
   </ItemGroup>
   <ItemGroup>
@@ -177,6 +178,7 @@
     <ClCompile Include="..\src\ofxKinectForWindows2\Source\FaceFrame.cpp" />
     <ClCompile Include="..\src\ofxKinectForWindows2\Source\Infrared.cpp" />
     <ClCompile Include="..\src\ofxKinectForWindows2\Source\LongExposureInfraRed.cpp" />
+    <ClCompile Include="..\src\ofxKinectForWindows2\Source\VGB.cpp" />
     <ClCompile Include="..\src\ofxKinectForWindows2\Utils.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
