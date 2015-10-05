@@ -7,6 +7,7 @@
 
 #include "../Data/Body.h"
 #include "../Data/Joint.h"
+#include "Kinect.Face.h"
 
 namespace ofxKinectForWindows2 {
 	namespace Source {
@@ -40,6 +41,12 @@ namespace ofxKinectForWindows2 {
 
 			IBodyFrameReader * reader;
 			ICoordinateMapper * coordinateMapper;
+
+      // Face sources
+      IFaceFrameSource*	   m_pFaceFrameSources[BODY_COUNT];
+
+      // Face readers
+      IFaceFrameReader*	   m_pFaceFrameReaders[BODY_COUNT];
 
 			Vector4 floorClipPlane;
 

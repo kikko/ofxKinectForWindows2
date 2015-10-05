@@ -15,7 +15,8 @@ namespace ofxKinectForWindows2 {
 			HandState rightHandState;
 			std::map<JointType, Joint> joints;
 			std::map<Activity, DetectionResult> activity;
-
+      ofQuaternion faceOrientation;
+      ofRectangle faceBoundingBox;
 			void drawWorld();
 			void clear();
 

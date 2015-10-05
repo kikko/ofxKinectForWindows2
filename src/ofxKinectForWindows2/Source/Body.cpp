@@ -38,6 +38,29 @@ namespace ofxKinectForWindows2 {
 					throw(Exception("Failed to initialise BodyFrame reader"));
 				}
 
+        const DWORD c_FaceFrameFeatures =
+          FaceFrameFeatures::FaceFrameFeatures_BoundingBoxInColorSpace
+          | FaceFrameFeatures::FaceFrameFeatures_PointsInColorSpace
+          | FaceFrameFeatures::FaceFrameFeatures_RotationOrientation
+          | FaceFrameFeatures::FaceFrameFeatures_Happy
+          | FaceFrameFeatures::FaceFrameFeatures_RightEyeClosed
+          | FaceFrameFeatures::FaceFrameFeatures_LeftEyeClosed
+          | FaceFrameFeatures::FaceFrameFeatures_MouthOpen
+          | FaceFrameFeatures::FaceFrameFeatures_MouthMoved
+          | FaceFrameFeatures::FaceFrameFeatures_LookingAway
+          | FaceFrameFeatures::FaceFrameFeatures_Glasses
+          | FaceFrameFeatures::FaceFrameFeatures_FaceEngagement;
+
+        // create a face frame source + reader to track each body in the fov
+        for (int i = 0; i < BODY_COUNT; i++)
+        {
+          // create the face frame source by specifying the required face frame features
+          CreateFaceFrameSource(sensor, 0, c_FaceFrameFeatures, &m_pFaceFrameSources[i]);
+          
+          // open the corresponding reader
+          m_pFaceFrameSources[i]->OpenReader(&m_pFaceFrameReaders[i]);
+        }
+
 				SafeRelease(source);
 
 				if (FAILED(sensor->get_CoordinateMapper(&this->coordinateMapper))) {
@@ -133,7 +156,70 @@ namespace ofxKinectForWindows2 {
 
 							body.leftHandState = leftHandState;
 							body.rightHandState = rightHandState;
-						}
+
+              // update face tracking
+              
+              HRESULT hr;
+              // retrieve the latest face frame from this reader
+              IFaceFrame* pFaceFrame = nullptr;
+              hr = m_pFaceFrameReaders[i]->AcquireLatestFrame(&pFaceFrame);
+
+              BOOLEAN bFaceTracked = false;
+              if (SUCCEEDED(hr) && nullptr != pFaceFrame)
+              {
+                // check if a valid face is tracked in this face frame
+                hr = pFaceFrame->get_IsTrackingIdValid(&bFaceTracked);
+              }
+
+              if (SUCCEEDED(hr))
+              {
+                if (bFaceTracked)
+                {
+                  IFaceFrameResult* pFaceFrameResult = nullptr;
+                  RectI faceBox = { 0 };
+                  PointF facePoints[FacePointType::FacePointType_Count];
+                  Vector4 faceRotation;
+                  DetectionResult faceProperties[FaceProperty::FaceProperty_Count];
+
+                  hr = pFaceFrame->get_FaceFrameResult(&pFaceFrameResult);
+
+                  // need to verify if pFaceFrameResult contains data before trying to access it
+                  if (SUCCEEDED(hr) && pFaceFrameResult != nullptr) {
+                    hr = pFaceFrameResult->get_FaceBoundingBoxInColorSpace(&faceBox);
+                    body.faceBoundingBox.x = faceBox.Left;
+                    body.faceBoundingBox.y = faceBox.Top;
+                    body.faceBoundingBox.width = faceBox.Right - faceBox.Left;
+                    body.faceBoundingBox.height = faceBox.Bottom - faceBox.Top;
+                    if (SUCCEEDED(hr)) {
+                      hr = pFaceFrameResult->GetFacePointsInColorSpace(FacePointType::FacePointType_Count, facePoints);
+                    }
+                    if (SUCCEEDED(hr)) {
+                      hr = pFaceFrameResult->get_FaceRotationQuaternion(&faceRotation);
+                      body.faceOrientation.x() = faceRotation.x;
+                      body.faceOrientation.y() = faceRotation.y;
+                      body.faceOrientation.z() = faceRotation.z;
+                      body.faceOrientation.w() = faceRotation.w;
+                    }
+                    if (SUCCEEDED(hr)) {
+                      hr = pFaceFrameResult->GetFaceProperties(FaceProperty::FaceProperty_Count, faceProperties);
+                    }
+                  }
+
+                  SafeRelease(pFaceFrameResult);
+                }
+                else
+                {
+                  // face tracking is not valid - attempt to fix the issue
+                  // a valid body is required to perform this step
+                  if (bTracked) {
+                    // update the face frame source with the tracking ID
+                    m_pFaceFrameSources[i]->put_TrackingId(trackingId);
+                  }
+                }
+              }
+
+              SafeRelease(pFaceFrame);
+            }
 					}
 				}
 
@@ -141,6 +227,7 @@ namespace ofxKinectForWindows2 {
 				{
 					SafeRelease(ppBodies[i]);
 				}
+        SafeRelease(frame);
 			}
 			catch (std::exception & e) {
 				OFXKINECTFORWINDOWS2_ERROR << e.what();
@@ -149,6 +236,7 @@ namespace ofxKinectForWindows2 {
 			SafeRelease(frame);
 		}
 
+    
 		//----------
 		map<JointType, ofVec2f> Body::getProjectedJoints(int bodyIdx, ProjectionCoordinates proj) {
 			map<JointType, ofVec2f> result;
