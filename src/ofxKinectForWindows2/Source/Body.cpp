@@ -179,7 +179,7 @@ namespace ofxKinectForWindows2 {
                   RectI faceBox = { 0 };
                   PointF facePoints[FacePointType::FacePointType_Count];
                   Vector4 faceRotation;
-                  DetectionResult faceProperties[FaceProperty::FaceProperty_Count];
+                  //DetectionResult faceProperties[FaceProperty::FaceProperty_Count];
 
                   hr = pFaceFrame->get_FaceFrameResult(&pFaceFrameResult);
 
@@ -201,7 +201,7 @@ namespace ofxKinectForWindows2 {
                       body.faceOrientation.w() = faceRotation.w;
                     }
                     if (SUCCEEDED(hr)) {
-                      hr = pFaceFrameResult->GetFaceProperties(FaceProperty::FaceProperty_Count, faceProperties);
+                      hr = pFaceFrameResult->GetFaceProperties(FaceProperty::FaceProperty_Count, body.faceProperties);
                     }
                   }
 

@@ -3,6 +3,7 @@
 #include "Joint.h"
 
 #include <Kinect.h>
+#include "Kinect.Face.h"
 
 namespace ofxKinectForWindows2 {
 	namespace Data {
@@ -11,6 +12,8 @@ namespace ofxKinectForWindows2 {
 			int bodyId;
 			int trackingId;
 			bool tracked;
+      DetectionResult faceProperties[FaceProperty::FaceProperty_Count];
+      string getFacePropertiesDebug() const;
 			HandState leftHandState;
 			HandState rightHandState;
 			std::map<JointType, Joint> joints;

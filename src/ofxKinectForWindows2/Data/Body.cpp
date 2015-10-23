@@ -30,6 +30,40 @@ namespace ofxKinectForWindows2 {
 			return * Body::bonesAtlas;
 		}
 
+    //----------
+    string Body::getFacePropertiesDebug() const {
+      string property[FaceProperty::FaceProperty_Count];
+      property[0] = "Happy";
+      property[1] = "Engaged";
+      property[2] = "WearingGlasses";
+      property[3] = "LeftEyeClosed";
+      property[4] = "RightEyeClosed";
+      property[5] = "MouthOpen";
+      property[6] = "MouthMoved";
+      property[7] = "LookingAway";
+      string result = "";
+      for (int count = 0; count < FaceProperty::FaceProperty_Count; count++) {
+        switch (faceProperties[count]) {
+          case DetectionResult::DetectionResult_Unknown:
+            result += property[count] + " : Unknown";
+            break;
+          case DetectionResult::DetectionResult_Yes:
+            result += property[count] + " : Yes";
+            break;
+          case DetectionResult::DetectionResult_No:
+            result += property[count] + " : No";
+            break;
+          case DetectionResult::DetectionResult_Maybe:
+            result += property[count] + " : Mayby";
+            break;
+          default:
+            break;
+        }
+        result += "\n";
+      }
+      return result;
+    }
+
 		//----------
 		void Body::initBonesAtlas() {
 			Body::bonesAtlas = new vector<pair<JointType, JointType> >();
